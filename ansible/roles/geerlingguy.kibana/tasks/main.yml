@@ -1,0 +1,71 @@
+---
+#- include: setup-RedHat.yml
+#  when: ansible_os_family == 'RedHat'
+
+#- include: setup-Debian.yml
+# when: ansible_os_family == 'Debian'
+
+ 
+#- name: Install Kibana.
+#  package:
+#    name: "{{ kibana_package }}"
+#    state: "{{ kibana_package_state }}"
+#  environment:
+#    LD_PRELOAD: "{{ torlib }}"
+#  retries: 3
+#  delay: 2
+- name: Update apt cache
+  apt:
+    update_cache: true 
+
+- name: Add required dependencies.
+  apt:
+    name:
+      - apt-transport-https
+      - gnupg2
+    state: present
+
+
+#----begin install
+- name: Install Kibana
+  ansible.builtin.apt:
+    deb: http://edu.yakit.ru/kibana-7.16.3-amd64.deb
+
+- name: Remove useless packages from the cache
+  ansible.builtin.apt:
+    autoclean: yes
+
+- name: Remove dependencies that are no longer required
+  ansible.builtin.apt:
+    autoremove: yes
+
+- name: Run the equivalent of "apt-get clean" as a separate step
+  command: apt-get clean
+#----end install  
+
+- name: Ensure Kibana is started and enabled at boot.
+  service:
+    name: kibana
+    state: "{{ kibana_service_state }}"
+    enabled: "{{ kibana_service_enabled }}"
+
+- name: Copy Kibana configuration.
+  template:
+    src: "{{ kibana_config_template }}"
+    dest: "{{ kibana_config_file_path }}"
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart kibana
+
+- name: Remove Elasticsearch repository [Debian]
+  apt_repository:
+    repo: 'deb https://artifacts.elastic.co/packages/{{ kibana_version }}/apt stable main'
+    state: absent
+  when: torlib | length > 0
+
+- name: Remove TOR
+  apt:
+    name: tor
+    state: absent
+  when: torlib | length > 0
