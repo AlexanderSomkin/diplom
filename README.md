@@ -1,0 +1,2 @@
+# diplom
+Somkin Diplom
