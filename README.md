@@ -1,3 +1,5 @@
+# Дипломная работа. Сомкин Александр.
+
 # Задание можно посмотреть по ссылке:
 ## [SYS-DIPLOM](https://github.com/netology-code/sys-diplom)
 
