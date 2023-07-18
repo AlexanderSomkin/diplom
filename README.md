@@ -1,5 +1,8 @@
 # Дипломная работа. Сомкин Александр.
 
+# Доступ Kibana: 84.201.148.36:5601
+# Доступ Grafana: 84.201.149.189:3000 login: admin pass: 12345
+
 # Задание можно посмотреть по ссылке:
 ## [SYS-DIPLOM](https://github.com/netology-code/sys-diplom)
 
