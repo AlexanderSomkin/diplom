@@ -7,9 +7,9 @@ terraform {
 }
 
 provider "yandex" {  
-  token     = #youtoken
-  cloud_id  = #youcloudid
-  folder_id = #youfolder
+  token     = "y0_AgAAAABu5qPyAATuwQAAAADmazP3_qsV75dqTGSx6orwI4c4q8A1n0U"
+  cloud_id  = "b1g4723j0v1m2nsu8o8j"
+  folder_id = "b1gvn7uqsfpvfhif2hf6"
 }
 
 ########## WEB #########
@@ -78,6 +78,39 @@ resource "yandex_compute_instance" "web-2" {
   }
 }
 
+# Snapshots
+resource "yandex_compute_snapshot_schedule" "default" {
+  name = "vms-snapshots"
+
+  schedule_policy {
+    expression = "0 0 * * *"
+  }
+
+  snapshot_count = 1
+
+  snapshot_spec {
+    description = "snapshot-description"
+    labels = {
+      snapshot-label = "my-snapshot-label-value"
+    }
+  }
+
+  labels = {
+    my-label = "my-label-value"
+  }
+
+  disk_ids = [
+    yandex_compute_instance.web-1.boot_disk[0].device_name,
+    yandex_compute_instance.web-2.boot_disk[0].device_name,
+    yandex_compute_instance.bastion.boot_disk[0].device_name,
+    yandex_compute_instance.grafana.boot_disk[0].device_name,
+    yandex_compute_instance.prometheus.boot_disk[0].device_name,
+    yandex_compute_instance.kibana.boot_disk[0].device_name,
+
+  ]
+
+}
+
 ####### Bastion #######
 
 resource "yandex_compute_instance" "bastion" {
@@ -112,7 +145,6 @@ resource "yandex_compute_instance" "bastion" {
     preemptible = true
   }
 }
-
 
 ###### Prometheus #######
 
@@ -218,7 +250,6 @@ resource "yandex_compute_instance" "elastic" {
   }
 }
 
-
 ####### Kibana ########
 
 resource "yandex_compute_instance" "kibana" {
@@ -253,5 +284,4 @@ resource "yandex_compute_instance" "kibana" {
     preemptible = true
   }
 }
-
 
