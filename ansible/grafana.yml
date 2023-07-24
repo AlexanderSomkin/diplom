@@ -1,3 +1,4 @@
+---
 - hosts: grafana
   become: yes
   gather_facts: true
@@ -6,11 +7,36 @@
       vars:
         grafana_version: latest
         grafana_security:
-          admin_user: som
-          admin_password: "12345"
+          admin_user: admin
+          admin_password: 12345
         grafana_datasources:
           - name: prometheus
             type: prometheus
             access: proxy
             url: "http://{{ groups['prometheus'][0] }}:9090"
             basicAuth: false
+
+  tasks:
+    - name: Copy Grafana dashboard files
+      copy:
+        src: grafana/
+        dest: /var/lib/grafana/dashboards/
+
+    - name: Create/Update dashboards file (provisioning)
+      become: true
+      copy:
+        dest: "/etc/grafana/provisioning/dashboards/ansible.yml"
+        content: |
+          apiVersion: 1
+          providers:
+           - name: 'default'
+             orgId: 1
+             type: file
+             options:
+               path: "{{ grafana_data_dir }}/dashboards"
+               foldersFromFilesStructure: true
+        backup: false
+        owner: root
+        group: grafana
+        mode: 0640
+      notify: restart grafana
