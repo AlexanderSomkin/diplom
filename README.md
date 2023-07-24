@@ -83,6 +83,11 @@
 Расписание.
 ![](https://github.com/AlexanderSomkin/diplom/blob/main/screenshots/snapshot.png)
 
+# Правки: [main.tf](https://github.com/AlexanderSomkin/diplom/blob/main/main.tf)
+
+Автоматизация дашбордов: 
+
+![](https://github.com/AlexanderSomkin/diplom/blob/main/screenshots/640f030c-f0e7-489b-bd12-690a01629f51.jpg)
 
 
 
